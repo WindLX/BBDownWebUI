@@ -1,27 +1,41 @@
 <script setup lang="ts">
-import { ref, onMounted, Ref } from 'vue';
+import { ref, Ref, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { Refresh, Delete, Plus } from '@element-plus/icons-vue'
+import { Refresh, Delete, Plus, Connection } from '@element-plus/icons-vue'
 import { DownloadTaskCollection } from '../model';
-import { fetchAllTasks, removeFailedTasks, removeFinishedTasks } from '../api';
+import { useBBDownStore } from '../store';
 import TaskList from './TaskList.vue';
 import AddTask from './AddTask.vue';
 
 // 状态管理
 const tasks: Ref<DownloadTaskCollection | null> = ref(null);
 const drawerVisible = ref(false);
+const store = useBBDownStore();
+const base_url = ref(store.base_url)
+const fetchTasksId = setInterval(() => {
+    fetchTasks();
+}, 1000);
 
 // 获取任务列表
 const fetchTasks = async () => {
     try {
-        tasks.value = await fetchAllTasks();
+        tasks.value = await store.provider.fetchAllTasks();
     } catch (error) {
         ElMessage.error('获取任务失败');
     }
 };
 
 // 页面加载时获取任务
-onMounted(() => { fetchTasks() });
+onUnmounted(() => {
+    clearInterval(fetchTasksId);
+})
+
+// 更新后端地址
+const updateBaseUrl = async () => {
+    store.setBaseUrl(base_url.value);
+    ElMessage.info('已更新后端地址');
+    fetchTasks();
+}
 
 // 新建任务
 const addTaskWrapper = async () => {
@@ -31,7 +45,7 @@ const addTaskWrapper = async () => {
 // 删除任务
 const removeFinishedTasksWrapper = async () => {
     try {
-        await removeFinishedTasks();
+        await store.provider.removeFinishedTasks();
         ElMessage.success('已完成任务删除成功');
         fetchTasks(); // 删除后刷新任务列表
     } catch (error) {
@@ -41,7 +55,7 @@ const removeFinishedTasksWrapper = async () => {
 
 const removeFailedTasksWrapper = async () => {
     try {
-        await removeFailedTasks();
+        await store.provider.removeFailedTasks();
         ElMessage.success('失败任务删除成功');
         fetchTasks(); // 删除后刷新任务列表
     } catch (error) {
@@ -59,6 +73,14 @@ const removeFailedTasksWrapper = async () => {
             <el-main>
                 <!-- 顶栏 -->
                 <el-row :gutter="20" class="mb-3">
+                    <p style="margin-bottom: 5px;">BBDown 后端地址</p>
+                    <el-input v-model="base_url">
+                        <template #append>
+                            <el-button :icon="Connection" @click="updateBaseUrl">提交</el-button>
+                        </template>
+                    </el-input>
+                </el-row>
+                <el-row :gutter="20" class="mb-3">
                     <el-col :span="24">
                         <el-button :icon="Plus" @click="addTaskWrapper" type="primary">新建</el-button>
                         <el-button :icon="Refresh" @click="fetchTasks">刷新</el-button>
@@ -71,7 +93,7 @@ const removeFailedTasksWrapper = async () => {
                 <TaskList :tasks="tasks?.Running" @update-tasks="fetchTasks"></TaskList>
 
                 <h4>已完成的任务</h4>
-                <TaskList :tasks="tasks?.Finished" @update-tasks="fetchTasks"></TaskList>
+                <TaskList :tasks="tasks?.Finished" @update-tasks="fetchTasks" :show-success="true"></TaskList>
 
             </el-main>
             <AddTask v-model="drawerVisible" @update-tasks="fetchTasks"></AddTask>

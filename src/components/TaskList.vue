@@ -2,19 +2,22 @@
 import { ElMessage } from 'element-plus';
 import { Delete } from '@element-plus/icons-vue'
 import { DownloadTask } from '../model';
-import { removeTaskById } from '../api';
+import { useBBDownStore } from '../store';
 
 defineProps<{
-    tasks?: DownloadTask[]
+    tasks?: DownloadTask[],
+    showSuccess?: boolean
 }>();
 
 const emits = defineEmits<{
     (e: 'updateTasks'): void
 }>();
 
+const store = useBBDownStore();
+
 const removeTask = async (aid: string) => {
     try {
-        await removeTaskById(aid);
+        await store.provider.removeTaskById(aid);
         ElMessage.success('任务删除成功');
         emits('updateTasks'); // 删除后刷新任务列表
     } catch (error) {
@@ -33,10 +36,10 @@ const formatSpeed = (speed: number) => {
 <template>
     <el-table :data="tasks" v-if="tasks?.length" style="width: 100%" max-height="500">
         <!-- 任务ID -->
-        <el-table-column prop="Aid" label="任务ID" width="180" fixed></el-table-column>
+        <el-table-column prop="Aid" label="任务ID" width="120" fixed></el-table-column>
 
         <!-- 标题 -->
-        <el-table-column prop="Title" label="标题" width="300" fixed></el-table-column>
+        <el-table-column prop="Title" label="标题" width="200" fixed></el-table-column>
 
         <!-- 下载请求的URL -->
         <el-table-column prop="Url" label="URL" width="300"></el-table-column>
@@ -51,7 +54,7 @@ const formatSpeed = (speed: number) => {
         <!-- 视频封面图片 -->
         <el-table-column prop="Pic" label="封面" width="150">
             <template #default="scope">
-                <el-image :src="scope.row.Pic" style="width: 100px; height: 60px;"></el-image>
+                <el-image :src="scope.row.Pic" style="max-width: 100px; max-height: 100px" fit="contain"></el-image>
             </template>
         </el-table-column>
 
@@ -94,7 +97,7 @@ const formatSpeed = (speed: number) => {
         </el-table-column>
 
         <!-- 是否成功 -->
-        <el-table-column prop="IsSuccessful" label="是否成功" width="100">
+        <el-table-column prop="IsSuccessful" label="是否成功" width="100" v-if="showSuccess">
             <template #default="scope">
                 <el-tag v-if="scope.row.IsSuccessful" type="success">成功</el-tag>
                 <el-tag v-else type="danger">失败</el-tag>
