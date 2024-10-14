@@ -23,3 +23,5 @@ dist.tar.gz
 *.njsproj
 *.sln
 *.sw?
+
+bbdown

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, Ref } from 'vue';
-import { ElMessage, ElForm } from 'element-plus';
-import { defaultOption, MyOption } from '../model';
-import { useBBDownStore } from '../store';
-import { ElMessageBox } from 'element-plus'
+import { ElForm, ElNotification, ElMessageBox } from 'element-plus';
+import { defaultOption, MyOption } from '../models/api';
+import { useBBDownStore } from '../stores/bbdown';
 
 const drawerVisible = defineModel();
 const taskOptions = ref<MyOption>(defaultOption);
@@ -12,6 +11,7 @@ const store = useBBDownStore();
 
 const parseMode = ref('web');
 const onlyMode = ref('false');
+
 
 const intro = `使用内置变量自定义单P存储文件名:
 <videoTitle>: 视频主标题
@@ -35,7 +35,6 @@ const intro = `使用内置变量自定义单P存储文件名:
 <apiType>: API类型(TV / APP / INTL / WEB)`;
 const intro2 = `使用内置变量自定义多P存储文件名: 默认为: <videoTitle>/[P<pageNumberWithZero>]<pageTitle>`;
 
-const size = ref('100%');
 
 const emits = defineEmits<{
     (e: 'updateTasks'): void
@@ -56,6 +55,10 @@ const handleClose = (done: () => void) => {
         })
         .catch(() => {
             // catch error
+            clearForm();
+        })
+        .finally(() => {
+            drawerVisible.value = false;
         })
 }
 
@@ -98,13 +101,33 @@ const submitTask = async () => {
             default:
                 break;
         }
+
+        if (!store.provider) {
+            ElNotification({
+                title: 'Add Task Error',
+                message: 'Failed to get provider',
+                type: 'error'
+            })
+            return;
+        }
+
         await store.provider.addTask(taskOptions.value);
-        ElMessage.success('任务添加成功');
-        drawerVisible.value = false;
-        clearForm();
-        emits('updateTasks');
+
+        ElNotification({
+            title: 'Success',
+            message: 'Add Task Success',
+            type: 'success'
+        })
+
     } catch (error) {
-        ElMessage.error('添加任务失败: ' + error);
+        let e = error as Error;
+        ElNotification({
+            title: 'Add Task Error',
+            message: e.message,
+            type: 'error'
+        })
+    } finally {
+        drawerVisible.value = false;
         clearForm();
         emits('updateTasks');
     }
@@ -113,7 +136,7 @@ const submitTask = async () => {
 </script>
 
 <template>
-    <el-drawer v-model="drawerVisible" title="新建任务" direction="ltr" :before-close="handleClose" :size="size">
+    <el-drawer v-model="drawerVisible" title="新建任务" direction="ltr" :before-close="handleClose" size="100%">
         <el-form :model="taskOptions" ref="taskForm" label-width="160px">
             <el-form-item label="视频链接" prop="Url" required>
                 <el-input v-model="taskOptions.Url" placeholder="请输入视频链接" />
@@ -302,7 +325,7 @@ const submitTask = async () => {
 
         <template #footer>
             <div class="dialog-footer">
-                <el-button @click="drawerVisible = false">取消</el-button>
+                <el-button @click="handleClose">取消</el-button>
                 <el-button type="primary" @click="submitTask">提交</el-button>
             </div>
         </template>

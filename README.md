@@ -137,6 +137,9 @@ Once deployed, you can access the WebUI by navigating to `http://<your-server-ip
 ## TODO
 
 - [ ] Dockerize the project
+- [x] UI improvements
+- [x] Use config file for backend API endpoint
+- [ ] Add hooks
 
 ## Thanks
 

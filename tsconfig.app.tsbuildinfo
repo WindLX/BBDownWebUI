@@ -1,1 +1,1 @@
-{"root":["./src/api.ts","./src/main.ts","./src/model.ts","./src/store.ts","./src/vite-env.d.ts","./src/App.vue","./src/components/AddTask.vue","./src/components/Main.vue","./src/components/TaskList.vue"],"version":"5.6.3"}
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/models/api.ts","./src/models/config.ts","./src/stores/bbdown.ts","./src/stores/config.ts","./src/app.vue","./src/components/addtask.vue","./src/components/finishedtasklist.vue","./src/components/header.vue","./src/components/main.vue","./src/components/runningtasklist.vue"],"version":"5.6.3"}
