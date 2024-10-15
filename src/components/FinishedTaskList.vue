@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { ElNotification } from 'element-plus';
 import { Delete, AlarmClock, Link, More } from '@element-plus/icons-vue'
 import { DownloadTask } from '../models/api';
@@ -16,6 +16,16 @@ const emits = defineEmits<{
 const store = useBBDownStore();
 const detailVisible = ref(false);
 const showTask = ref<DownloadTask | null>(null);
+
+const dialogWidth = ref('500px');
+
+const updateMedia = () => {
+    if (window.innerWidth < 768) {
+        dialogWidth.value = '90%';
+    } else {
+        dialogWidth.value = '500px';
+    }
+};
 
 const removeTask = async (aid: string) => {
     try {
@@ -60,6 +70,15 @@ const formatSpeed = (speed: number) => {
     if (speed > 1e3) return (speed / 1e3).toFixed(2) + ' KB/s';
     return speed + ' B/s';
 };
+
+onMounted(() => {
+    updateMedia();
+    window.addEventListener('resize', updateMedia);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', updateMedia);
+});
 </script>
 
 <template>
@@ -82,9 +101,12 @@ const formatSpeed = (speed: number) => {
                             {{ new Date(task.VideoPubTime * 1000).toLocaleString() }}
                         </span>
                         <div class="card-buttons">
-                            <el-button plain :icon="More" @click="showDetail(task)">详情</el-button>
-                            <el-button type="primary" :icon="Link" @click="openUrl(task.Url)">链接</el-button>
-                            <el-button type="danger" :icon="Delete" @click="removeTask(task.Aid)">删除</el-button>
+                            <el-button type="info" plain class="card-button" :icon="More"
+                                @click="showDetail(task)">详情</el-button>
+                            <el-button type="primary" plain class="card-button" :icon="Link"
+                                @click="openUrl(task.Url)">链接</el-button>
+                            <el-button type="danger" class="card-button" :icon="Delete"
+                                @click="removeTask(task.Aid)">删除</el-button>
                         </div>
                     </div>
 
@@ -93,8 +115,8 @@ const formatSpeed = (speed: number) => {
 
         </li>
     </ul>
-    <el-dialog v-model="detailVisible" title="详情" width="500">
-        <div class="card-progress" v-if="showTask">
+    <el-dialog v-model="detailVisible" title="详情" :width="dialogWidth">
+        <div class="card-detail" v-if="showTask">
             <span>id: {{ showTask.Aid }}</span>
             <span>创建时间: {{ new Date(showTask.TaskCreateTime * 1000).toLocaleString() }}</span>
             <span v-if="showTask.TaskFinishTime">
@@ -108,6 +130,13 @@ const formatSpeed = (speed: number) => {
 </template>
 
 <style scoped>
+ul {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+}
+
 li {
     list-style: none;
 }
@@ -119,10 +148,11 @@ li {
     margin-bottom: 5px;
 }
 
-.card-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between
+.card-image {
+    width: 300px;
+    height: 150px;
+    margin: 5px;
+    border-radius: 5px;
 }
 
 .card-content {
@@ -132,6 +162,12 @@ li {
     width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
 }
 
@@ -153,27 +189,73 @@ li {
     color: #8d8d8d;
 }
 
-.card-image {
-    width: 300px;
-    height: 150px;
-    margin: 5px;
-    background-color: #ededed;
-    border-radius: 5px;
-}
-
 .card-buttons {
     display: flex;
-    align-items: center;
 }
 
-.card-progress {
+.card-detail {
     margin-bottom: 5px;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.card-progress span {
+.card-detail span {
     font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-image {
+        width: 92%;
+        height: auto;
+        margin: 10px;
+        margin-bottom: 0;
+        border-radius: 5px;
+    }
+
+    .card-content {
+        width: 100%;
+    }
+
+    .card-title {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 15px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .card-status {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card-buttons {
+        width: 90%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card-button {
+        margin: 0;
+    }
+
+    .card-time {
+        justify-content: center;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-title span {
+        font-size: 16px;
+    }
 }
 </style>

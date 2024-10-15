@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Loading, CircleCheck, Warning } from '@element-plus/icons-vue';
+import { Loading, CircleCheck, Warning, Sunny, Moon } from '@element-plus/icons-vue';
 import { ref, Ref, onMounted } from 'vue';
 import { useBBDownStore } from '../stores/bbdown';
 
@@ -17,6 +17,15 @@ const emits = defineEmits<{
 const store = useBBDownStore();
 const status: Ref<BBDownStatus> = ref(BBDownStatus.Loading);
 
+const isDark = ref(false);
+const changeMode = () => {
+    if (isDark.value) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
+
 const connect = () => {
     if (!store.provider) {
         status.value = BBDownStatus.Error;
@@ -33,10 +42,6 @@ const connect = () => {
     })
 }
 
-const retry = () => {
-    if (status.value === BBDownStatus.Ready) { connect() }
-}
-
 onMounted(() => {
     connect();
 })
@@ -44,12 +49,20 @@ onMounted(() => {
 
 <template>
     <div class="header">
-        <h3 class="title">BBDown 任务管理</h3>
-        <el-icon size="22px" @click="retry">
-            <CircleCheck v-if="status === BBDownStatus.Ready" class="icon-check" />
-            <Loading v-if="status === BBDownStatus.Loading" class="icon-loading" />
-            <Warning v-if="status === BBDownStatus.Error" class="icon-error" />
-        </el-icon>
+        <div class="left-stack">
+            <img class="logo" alt="logo" src="/bilibili.svg" />
+            <h3 class="title">BBDown 任务管理</h3>
+        </div>
+
+        <div class="right-stack">
+            <el-switch v-model="isDark" :active-action-icon="Moon" :inactive-action-icon="Sunny" @change="changeMode" />
+            <el-icon size="22px">
+                <CircleCheck v-if="status === BBDownStatus.Ready" class="icon-check" />
+                <Loading v-if="status === BBDownStatus.Loading" class="icon-loading" />
+                <Warning v-if="status === BBDownStatus.Error" class="icon-error" />
+            </el-icon>
+        </div>
+
     </div>
 </template>
 
@@ -62,11 +75,26 @@ onMounted(() => {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+.left-stack {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    width: 30px;
+}
+
+.right-stack {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .icon-check {
     color: #67c23a;
 }
 
-/* create a loading anime for icon-loading */
 .icon-loading {
     color: #409eff;
     animation: spin 2s linear infinite;

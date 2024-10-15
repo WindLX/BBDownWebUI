@@ -126,11 +126,13 @@ const removeFailedTasksWrapper = async () => {
             <el-main>
                 <!-- 顶栏 -->
                 <el-row :gutter="20" class="mb-3">
-                    <el-col :span="24">
-                        <el-button :icon="Plus" @click="addTaskWrapper" type="primary">新建</el-button>
-                        <el-button :icon="Refresh" @click="fetchTasks">刷新</el-button>
-                        <el-button :icon="Delete" @click="removeFinishedTasksWrapper">删除已完成任务</el-button>
-                        <el-button :icon="Delete" @click="removeFailedTasksWrapper">删除失败任务</el-button>
+                    <el-col :span="24" class="top-buttons">
+                        <el-button :icon="Plus" @click="addTaskWrapper" type="primary" class="top-button">新建</el-button>
+                        <el-button :icon="Refresh" @click="fetchTasks" class="top-button">刷新</el-button>
+                        <el-button type="danger" plain :icon="Delete" @click="removeFinishedTasksWrapper"
+                            class="top-button">删除已完成任务</el-button>
+                        <el-button type="danger" plain :icon="Delete" @click="removeFailedTasksWrapper"
+                            class="top-button">删除失败任务</el-button>
                     </el-col>
                 </el-row>
 
@@ -164,5 +166,18 @@ const removeFailedTasksWrapper = async () => {
 
 .mt-3 {
     margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .top-buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .top-button {
+        margin: 0;
+    }
 }
 </style>

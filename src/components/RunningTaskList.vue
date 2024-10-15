@@ -28,9 +28,9 @@ const formatSpeed = (speed: number) => {
                         <span>{{ task.Title }}</span>
                     </h3>
 
-                    <div class="card-progress">
-                        <el-progress :percentage="(task.Progress * 100).toFixed(2)" :duration="20" :stroke-width="15"
-                            striped striped-flow />
+                    <div class="card-detail">
+                        <el-progress :percentage="Math.floor(((task.Progress * 100) * 100) / 100)" :duration="20"
+                            :stroke-width="15" striped striped-flow />
                         <span class="card-speed">
                             <el-icon class="icon">
                                 <Odometer />
@@ -47,7 +47,7 @@ const formatSpeed = (speed: number) => {
                             {{ new Date(task.VideoPubTime * 1000).toLocaleString() }}
                         </span>
                         <div class="card-buttons">
-                            <el-button type="primary" :icon="Link" @click="openUrl(task.Url)">链接</el-button>
+                            <el-button type="primary" plain :icon="Link" @click="openUrl(task.Url)">链接</el-button>
                         </div>
                     </div>
 
@@ -60,6 +60,13 @@ const formatSpeed = (speed: number) => {
 </template>
 
 <style scoped>
+ul {
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+}
+
 li {
     list-style: none;
 }
@@ -71,10 +78,11 @@ li {
     margin-bottom: 5px;
 }
 
-.card-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between
+.card-image {
+    width: 300px;
+    height: 150px;
+    margin: 5px;
+    border-radius: 5px;
 }
 
 .card-content {
@@ -85,6 +93,12 @@ li {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
 }
 
 .card-status {
@@ -105,20 +119,11 @@ li {
     color: #8d8d8d;
 }
 
-.card-image {
-    width: 300px;
-    height: 150px;
-    margin: 5px;
-    background-color: #ededed;
-    border-radius: 5px;
-}
-
 .card-buttons {
     display: flex;
-    align-items: center;
 }
 
-.card-progress {
+.card-detail {
     margin-bottom: 5px;
     display: flex;
     flex-direction: column;
@@ -134,5 +139,67 @@ li {
     align-items: center;
     gap: 5px;
     margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-image {
+        width: 92%;
+        height: auto;
+        margin: 10px;
+        margin-bottom: 0;
+        border-radius: 5px;
+    }
+
+    .card-content {
+        width: 100%;
+        align-items: center;
+    }
+
+    .card-title {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 15px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .card-status {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card-buttons {
+        width: 90%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card-time {
+        justify-content: center;
+        padding-right: 0;
+    }
+
+    .card-detail {
+        width: 90%;
+    }
+
+    .card-speed {
+        margin-top: 0;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-title span {
+        font-size: 16px;
+    }
 }
 </style>

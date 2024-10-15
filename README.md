@@ -2,6 +2,36 @@
 
 This project provides a WebUI for managing download tasks via the [BBDown](https://github.com/nilaoda/BBDown) backend service. It utilizes a frontend built with Vue 3, Vite, and Element Plus, and communicates with the backend using a REST API.
 
+## Preview
+
+### Web
+
+Main Page
+
+![Main Page](./image/image1.png)
+
+Add Task
+
+![Add Task](./image/image2.png)
+
+Dark Main Page
+
+![Dark Main Page](./image/image3.png)
+
+Dark Add Task
+
+![Dark Add Task](./image/image4.png)
+
+### Mobile
+
+Mobile Main Page
+
+![Mobile Main Page](./image/image5.png)
+
+Mobile Add Task
+
+![Mobile Add Task](./image/image6.png)
+
 ## Prerequisites
 
 - **BBDown Backend**: Ensure you have the BBDown backend binary ready, which can be started using the `serve` command.
@@ -39,7 +69,7 @@ Download the `dist` files from the [release page](https://github.com/WindLX/BBDo
 /var/www/bbdown
 ```
 
-### 3 Configure the Backend API Endpoint
+### 3. Configure the Backend API Endpoint
 
 Run the following command to start the backend:
 
@@ -128,18 +158,53 @@ sudo systemctl reload nginx
 
 Once deployed, you can access the WebUI by navigating to `http://<your-server-ip>:89` in your browser.
 
-## Preview
+## Docker
 
-![Main Page](./image/image1.png)
+You can also use Docker to deploy the project.
 
-![Add Task](./image/image2.png)
+Firstly, get the latest release from [GitHub](https://github.com/WindLX/BBDownWebUI/releases/) and unpack it to the `docker` directory. Change the `url` in `dist/config.toml/backend` to the BBDown backend API endpoint(such as `http://127.0.0.1:89/api`, the endpoint is the same as the one you set in the nginx configuration).
+
+Then, cd to directory docker and build the Docker image:
+
+```bash
+docker build -t bbdown-webui .
+```
+
+Then, run the Docker container:
+
+```bash
+docker run -d -p 89:80 -p 8080:8080 -v /path/to/downloads:/downloads bbdown-webui
+```
+
+Access the WebUI by navigating to `http://localhost:89` in your browser.
+
+You can also use docker compose:
+
+```bash
+docker-compose up -d
+```
+
+Before you download the video, you need to execute the following command to set the download directory:
+
+```bash
+docker exec -it bbdown-webui /bin/bash
+./BBDown login
+```
+
+After you login in, you can use the WebUI to download videos.
 
 ## TODO
 
-- [ ] Dockerize the project
+- [x] Dockerize the project
 - [x] UI improvements
+- [x] Dark Mode
+- [x] Mobile UI
 - [x] Use config file for backend API endpoint
 - [ ] Add hooks
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Thanks
 

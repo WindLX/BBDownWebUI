@@ -33,7 +33,8 @@ const intro = `使用内置变量自定义单P存储文件名:
 <publishDate>: 收藏夹 / 番剧 / 合集发布时间
 <videoDate>: 视频发布时间(分p视频发布时间与<publishDate> 相同)
 <apiType>: API类型(TV / APP / INTL / WEB)`;
-const intro2 = `使用内置变量自定义多P存储文件名: 默认为: <videoTitle>/[P<pageNumberWithZero>]<pageTitle>`;
+const intro2 = `使用内置变量自定义多P存储文件名:
+默认为: <videoTitle>/[P<pageNumberWithZero>]<pageTitle>`;
 
 
 const emits = defineEmits<{
@@ -137,7 +138,7 @@ const submitTask = async () => {
 
 <template>
     <el-drawer v-model="drawerVisible" title="新建任务" direction="ltr" :before-close="handleClose" size="100%">
-        <el-form :model="taskOptions" ref="taskForm" label-width="160px">
+        <el-form :model="taskOptions" ref="taskForm" label-width="100px">
             <el-form-item label="视频链接" prop="Url" required>
                 <el-input v-model="taskOptions.Url" placeholder="请输入视频链接" />
             </el-form-item>
@@ -264,11 +265,12 @@ const submitTask = async () => {
                 <el-text>(hk|tw|th) 使用BiliPlus时必选, 指定BiliPlus area</el-text>
             </el-form-item>
             <el-form-item label="强制替换">
-                <el-checkbox v-model="taskOptions.ForceReplaceHost">强制替换下载服务器</el-checkbox>
-                <el-checkbox v-model="taskOptions.ForceHttp">下载音视频时强制使用HTTP协议替换HTTPS</el-checkbox>
+                <el-checkbox v-model="taskOptions.ForceReplaceHost" class="text">强制替换下载服务器</el-checkbox>
+                <el-checkbox v-model="taskOptions.ForceHttp" class="text">下载音视频时强制使用HTTP协议替换HTTPS</el-checkbox>
             </el-form-item>
             <el-form-item label="PCDN">
-                <el-checkbox v-model="taskOptions.AllowPcdn">不替换PCDN域名, 仅在正常情况与--upos-host均无法下载时使用</el-checkbox>
+                <el-checkbox v-model="taskOptions.AllowPcdn" class="text">不替换PCDN域名,仅在正常情况与--upos-host均无法下载时使用
+                </el-checkbox>
             </el-form-item>
 
             <el-divider />
@@ -336,4 +338,12 @@ const submitTask = async () => {
 .dialog-footer {
     flex: auto;
 }
+
+.el-checkbox__label {
+    white-space: pre-wrap;
+}
+
+@media (max-width: 768px) {}
+
+@media (max-width: 480px) {}
 </style>
