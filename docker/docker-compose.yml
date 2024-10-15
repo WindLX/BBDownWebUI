@@ -1,0 +1,11 @@
+version: '3'
+services:
+  bbdown-webui:
+    build: .
+    ports:
+      - "89:80"
+      - "8080:8080"
+    container_name: bbdown-container
+    restart: unless-stopped
+    volumes:
+      - /downloads:/downloads
