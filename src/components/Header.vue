@@ -43,6 +43,8 @@ const connect = () => {
 }
 
 onMounted(() => {
+    isDark.value = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    changeMode();
     connect();
 })
 </script>
